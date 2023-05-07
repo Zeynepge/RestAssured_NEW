@@ -37,6 +37,7 @@ public class ZippoTest {
                 .log().body()    // dönen body json datat sı,   log.all()
                 .statusCode(200) // dönüş kodu 200 mü
         ;
+
     }
 
     @Test

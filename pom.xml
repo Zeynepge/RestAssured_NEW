@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>RestAssured_5</artifactId>
+    <artifactId>RestAssured_NEW</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
