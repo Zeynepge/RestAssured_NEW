@@ -8,15 +8,19 @@ import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class TODO1_GoRest_Posts {
     // TODO :HaftaSonu TODO:  GoRest de daha önce yaptığınız posts ve comments
     //  resourcelarını
 
 
-    Faker faker=new Faker();
+    Faker faker3 = new Faker();
     RequestSpecification reqSpec;
 
 
@@ -24,40 +28,30 @@ public class TODO1_GoRest_Posts {
 
 
     @BeforeClass
-    public void Setup(){
+    public void Setup() {
 
-        baseURI="https://gorest.co.in/public/v2/posts";
+        baseURI = "https://gorest.co.in/public/v2/posts";
 
-        reqSpec=new RequestSpecBuilder()
-                .addHeader("Authorization","Bearer 3f4c352c7990cf988a5366a7baab6260362ca54a8bedc0a416b02e48926443b8")
+        reqSpec = new RequestSpecBuilder()
+                .addHeader("Authorization", "Bearer 6fdc14a1ab97bf9fecdaa233e63cfee45f2be7ab59d879668664b51639ba2de5")
                 .setContentType(ContentType.JSON)
                 .build();
     }
 
-    @Test
-    public void createPostJson(){
-       /* Post newPost=new Post();
+    @Test(enabled = true)
+    public void createPostClass() {
+        Post newPost = new Post();
 
-        newPost.user_id=faker.number().numberBetween(100,20000);
-        newPost.title=faker.name().title();
-        newPost.body=faker.book().author();*/
+        newPost.user_id = 1526224;
+        newPost.title = faker3.name().title();
+        newPost.body = faker3.book().author();
 
-        int _id=faker.number().numberBetween(100,20000);
-        int us_id=faker.number().numberBetween(100,20000);
-        String title=faker.name().title();
-        String body =faker.book().author();
-
-
-        postID=
+        postID =
                 given()
                         .spec(reqSpec)
-                        .body("{\"user_id\":"+us_id+", \n" +
-                                "\"title\": \""+title+"\",\n" +
-                                "\"body\": \""+body+"\"\n" +
-                                "}")
+                        .body(newPost)
 
                         .log().uri()
-                        .log().body()
 
                         .when()
                         .post("")
@@ -68,12 +62,114 @@ public class TODO1_GoRest_Posts {
                         .statusCode(201)
                         .contentType(ContentType.JSON)
                         .extract().path("id")
-
-                ;
-        System.out.println("postID : "+postID);
+        ;
 
     }
 
+    @Test(enabled = false)
+    public void createPostMap() {
+
+        Map<String, Object> newPost = new HashMap<>();
+
+        newPost.put("user_id", 1526224);
+        newPost.put("title", faker3.book().title());
+        newPost.put("body", faker3.book().author());
+
+        postID =
+                given()
+                        .spec(reqSpec)
+
+                        .body(newPost)
+
+                        .when()
+                        .post("")
+
+                        .then()
+                        .log().body()
+
+                        .statusCode(201)
+                        .contentType(ContentType.JSON)
+                        .extract().path("id")
+        ;
+    }
+
+    @Test(dependsOnMethods = "createPostClass")
+    public void getPostByID() {
+
+        given()
+                .spec(reqSpec)
+
+                .when()
+                .get("" + postID)
+
+                .then()
+                .log().body()
+
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("id", equalTo(postID))
+        ;
+    }
+
+    @Test(dependsOnMethods = "getPostByID")
+    public void updatePostByID() {
+        Map<String, Object> newPost = new HashMap<>();
+
+        String title = faker3.book().title();
+        String body_ = faker3.book().author();
+
+        newPost.put("user_id", 1526224);
+        newPost.put("title", title);
+        newPost.put("body", body_);
+
+        given()
+                .spec(reqSpec)
+
+                .body(newPost)
+
+                .when()
+                .put("" + postID)
+
+                .then()
+                .log().body()
+
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("id", equalTo(postID))
+                .body("title", equalTo(title))
+                .body("body", equalTo(body_))
+        ;
+
+    }
+
+    @Test(dependsOnMethods = "updatePostByID")
+    public void deletePostByID() {
+
+        given()
+                .spec(reqSpec)
+
+                .when()
+                .delete("" + postID)
+
+                .then()
+                .log().body()
+
+                .statusCode(204)
+        ;
+    }
+
+    @Test(dependsOnMethods = "deletePostByID")
+    public void deletePostByIDNegative(){
+
+        given()
+                .spec(reqSpec)
+
+                .when()
+                .delete(""+postID)
+
+                .then()
+                .statusCode(404);
+    }
 
 
 }
