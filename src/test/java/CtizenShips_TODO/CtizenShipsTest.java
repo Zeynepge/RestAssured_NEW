@@ -36,7 +36,7 @@ public class CtizenShipsTest {
     public void Setup() throws IOException {
         baseURI="https://test.mersys.io";
 
-        String path="src/test/java/Campus/Excel_Data/Campus_Data.xlsx";
+        String path="src/test/java/Excel_Data/Campus_Data.xlsx";
 
         FileInputStream inputStream=new FileInputStream(path);
         Workbook workbook= WorkbookFactory.create(inputStream);
